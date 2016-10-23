@@ -38,6 +38,7 @@ public class JsonLoader extends AsyncTask<String, String, String> {
             URL url = new URL(CampoStats.SERVER);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
             connection.connect();
 
             //send data
