@@ -11,10 +11,10 @@ public class Request {
 
     public static class Messages{
         public static String get(int out){
-            return "messages.get&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&out=" + out;
+            return "method=messages.get&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&out=" + out;
         }
         public static String getById(int message_ids){
-            return "messages.getById&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&message_ids=" + message_ids;
+            return "method=messages.getById&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&message_ids=" + message_ids;
         }
 
     }
