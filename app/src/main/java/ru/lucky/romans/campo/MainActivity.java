@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JsonLoader(textView, Request.Messages.getById(1)).execute();
+                new JsonLoader(textView, Request.Messages.get(0, -10, -10, -10, -10, -10, -10)).execute();
             }
         });
     }
