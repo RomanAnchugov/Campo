@@ -75,9 +75,9 @@ public class Request {
             }
             return req;
         }
-        public static String send(int id_conversation, int message, int forward_messages){
+        public static String send(int id_conversation, String message, String forward_messages){
             String req = "method=messages.send&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&message=" + message + "&id_conversation=" + id_conversation;
-            if(forward_messages != -10){
+            if(forward_messages != null){
                 req += "&forward_messages=" + forward_messages;
             }
             return req;
@@ -179,11 +179,21 @@ public class Request {
             return req;
         }
         public static String saveProfileInfo(String last_name, String first_name, int sex, String screen_name, String maiden_name){
-            String req = "method=account.setOnline&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&last_name=" + last_name + "&first_name=" + first_name + "&sex=" + sex + "&screen_name=" + screen_name + "&maiden_name=" + maiden_name;
+            String req = "method=account.saveProfileInfo&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&last_name=" + last_name + "&first_name=" + first_name + "&sex=" + sex + "&screen_name=" + screen_name + "&maiden_name=" + maiden_name;
             return req;
         }
     }
 
+    public static class Friends{
+        public static String add(int sid, int tid){
+            String req = "method=contacts.add=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
+            return req;
+        }
+        public static String delete(int sid, int tid){
+            String req = "method=contacts.delete=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
+            return req;
+        }
+    }
 
 
     //TODO:   реализовать таким образом все методы
