@@ -30,11 +30,10 @@ public class JsonParser {
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
-            connection.connect();
+            connection.connect();//сделать проверку на интеренет подключение
 
             //send data
             OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-            Log.e("JSON", request);
             wr.write(request);
             wr.flush();
 
@@ -47,7 +46,7 @@ public class JsonParser {
             while ((line = reader.readLine()) != null) {
                 buffer.append(line);
             }
-            Log.e("JSON", buffer.toString());
+            stream.close();
             jsonObject = new JSONObject(buffer.toString());
             return jsonObject;
         } catch (MalformedURLException e) {

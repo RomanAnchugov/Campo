@@ -10,4 +10,48 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.lucky.romans.campo.login.LoginActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:layout_marginTop="129dp"
+                android:id="@+id/editTextLogin"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:hint="@string/login_field" />
+
+            <Button
+                android:text="@string/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonLogin"
+                android:layout_marginTop="127dp"
+                android:layout_below="@+id/editTextLogin"
+                android:layout_centerHorizontal="true" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/editTextPassword"
+                android:hint="@string/password_field"
+                android:layout_below="@+id/editTextLogin"
+                android:layout_alignLeft="@+id/editTextLogin"
+                android:layout_alignStart="@+id/editTextLogin"
+                android:layout_marginTop="33dp" />
+        </RelativeLayout>
+    </ScrollView>
+
 </RelativeLayout>

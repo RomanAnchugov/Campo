@@ -14,6 +14,36 @@ import static ru.lucky.romans.campo.CampoStats.ID_USER;
 public class Request {
 
     public static class Messages{
+        public static String encrypt(String message){
+            String crypt = "4bAjVxy";
+            String responce = "";
+            String temp="";
+            char symbol;
+            for(int i=0, k=0;i<message.length();i++){
+                symbol=(char)(crypt.charAt(i-k*crypt.length())^message.charAt(i));
+                temp+=symbol;
+                if((i+1)%crypt.length()==0){
+                    k++;
+                    responce+=temp;
+                    crypt=temp;
+                    temp="";
+                }
+            }
+            if(temp!="")responce+=temp;
+            return responce;
+        }
+        public static String decrypt(String message){
+            String crypt="4bAjVxy";
+            String responce="";
+            for(int i=0,k=0;i<message.length();i++){
+                responce+=(char)(crypt.charAt(i-k*crypt.length())^message.charAt(i));
+                if((i+1)%crypt.length()==0){
+                    crypt=message.substring(k*crypt.length(),(k+1)*crypt.length());
+                    k++;
+                }
+            }
+            return responce;
+        }
         public static String get(int out, int time_offset, int last_message_id, int offset, int count, int filters, int preview_length){
             String req = "method=messages.get&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&out=" + out;
             if(time_offset != -10){
@@ -186,15 +216,22 @@ public class Request {
 
     public static class Friends{
         public static String add(int sid, int tid){
-            String req = "method=contacts.add=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
+            String req = "method=contacts.add&access_token=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
             return req;
         }
         public static String delete(int sid, int tid){
-            String req = "method=contacts.delete=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
+            String req = "method=contacts.delete&access_token=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
             return req;
         }
     }
 
+    public static class Auth{
+        public static String login(String login, String password){
+            //	login(login, password, platformm, device)
+            String req = "method=auth.login&login=" + login + "&password=" + password + "&platform=android&device=android";
+            return req;
+        }
+    }
 
     //TODO:   реализовать таким образом все методы
 

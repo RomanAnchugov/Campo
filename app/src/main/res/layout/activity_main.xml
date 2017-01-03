@@ -10,38 +10,28 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.lucky.romans.campo.MainActivity">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/edit_message"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/button15"
-        android:layout_toStartOf="@+id/button15" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button15"
-        style="@style/Widget.AppCompat.Button"
-        android:background="@android:drawable/ic_menu_send"
-        android:layout_alignTop="@+id/edit_message"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="61dp"
-        android:layout_marginStart="61dp"
-        android:layout_marginTop="26dp"
-        android:id="@+id/textView"
-        android:textSize="24sp" />
+        android:fillViewport="true"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/test"
+                android:textSize="24sp" />
+        </RelativeLayout>
+    </ScrollView>
+
 </RelativeLayout>

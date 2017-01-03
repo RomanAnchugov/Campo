@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Campo</string>
+
+    <string name="login_field">ID or e-mail</string>
+    <string name="password_field">Password</string>
+    <string name="login_button">Login</string>
+
+    <string name="data_file_name">PasswordLogin</string>
+
 </resources>
