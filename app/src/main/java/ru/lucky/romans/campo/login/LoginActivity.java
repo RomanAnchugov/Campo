@@ -30,6 +30,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private String login;
     private String password;
+    private String token;
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +40,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         context = this;
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
-        login = pref.getString("login", null);
-        password = pref.getString("password", null);
+        pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);;
 
         loginField = (EditText) findViewById(R.id.editTextLogin);
         passwordField = (EditText) findViewById(R.id.editTextPassword);
         loginButton = (Button) findViewById(R.id.buttonLogin);
         loginButton.setOnClickListener(this);
 
-        if(login != null && password != null){
-            loginField.setText(login);
-            passwordField.setText(password);
-        }
 
     }
 
@@ -88,13 +84,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("access_token", jsonObject.getString("access_token"));
                     setResult(RESULT_OK, intent);
 
-                    SharedPreferences pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
                     SharedPreferences.Editor editPref = pref.edit();
                     editPref.putString("login", login);
                     editPref.putString("password", password);
+                    editPref.putString("token", jsonObject.getString("access_token"));
+                    editPref.putString("user_id", jsonObject.getString("user_id"));
                     editPref.apply();
 
-                    Log.e("JSON", jsonObject.toString());
                     finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
