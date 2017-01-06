@@ -89,18 +89,18 @@ public class Request {
             }
             return req;
         }
-        public static String getHistory(int id_conversation, int start_message_id, int rev, int offset, int count){
+        public static String getHistory(String id_conversation, String start_message_id, String rev, String offset, String count){
             String req = "method=messages.getHistory&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&id_conversation=" + id_conversation;
-            if(start_message_id != -10){
+            if(start_message_id != null){
                 req += "&start_message_id=" + start_message_id;
             }
-            if(rev != -10){
+            if(rev != null){
                 req += "&rev=" + rev;
             }
-            if(offset != -10){
+            if(offset != null){
                 req += "&offset=" + offset;
             }
-            if(count != -10){
+            if(count != null){
                 req += "&count=" + count;
             }
             return req;

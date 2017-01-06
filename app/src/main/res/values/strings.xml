@@ -7,4 +7,6 @@
 
     <string name="data_file_name">PasswordLogin</string>
 
+    <string name="enter_message">Enter your message…</string>
+
 </resources>

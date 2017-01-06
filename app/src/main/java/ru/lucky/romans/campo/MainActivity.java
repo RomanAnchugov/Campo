@@ -34,6 +34,7 @@ import java.net.URL;
 import ru.lucky.romans.campo.login.LoginActivity;
 
 import static android.R.attr.data;
+import static android.os.Build.VERSION_CODES.M;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -119,6 +120,13 @@ public class MainActivity extends AppCompatActivity{
                                 }else if(event.getAction() == MotionEvent.ACTION_UP){
                                     currentDialogContainer.setBackgroundColor(Color.TRANSPARENT);
                                     //тут реализовать переход на вью с выбранным диалогом
+                                    Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                                    try {
+                                        intent.putExtra("conversation_id", currentDialog.getString("conversation_id"));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    startActivity(intent);
 
                                 }
                                 return true;
@@ -211,11 +219,10 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            Log.e("JSON", bitmap.getWidth() + "");
             bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
             dialogImage.setImageBitmap(bitmap);
         }
-    }//просто тестовый класс для тестов
+    }
 
 }
 
