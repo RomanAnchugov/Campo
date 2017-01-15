@@ -1,9 +1,5 @@
 package ru.lucky.romans.campo;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static android.os.Build.ID;
 import static ru.lucky.romans.campo.CampoStats.ACCESS_TOKEN;
 import static ru.lucky.romans.campo.CampoStats.ID_USER;
 
@@ -30,6 +26,13 @@ public class Request {
                 }
             }
             if(temp!="")responce+=temp;
+            for (int i = 0; i < responce.length(); i++) {
+                if (responce.charAt(i) == '\\') {
+                    responce = responce.substring(0, i) + "\\" + responce.substring(i, responce.length());
+                    i += 2;
+                }
+
+            }
             return responce;
         }
         public static String decrypt(String message){
@@ -105,7 +108,8 @@ public class Request {
             }
             return req;
         }
-        public static String send(int id_conversation, String message, String forward_messages){
+
+        public static String send(String id_conversation, String message, String forward_messages) {
             String req = "method=messages.send&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&message=" + message + "&id_conversation=" + id_conversation;
             if(forward_messages != null){
                 req += "&forward_messages=" + forward_messages;

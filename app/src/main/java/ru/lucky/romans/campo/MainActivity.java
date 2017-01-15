@@ -2,23 +2,18 @@ package ru.lucky.romans.campo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -33,13 +28,13 @@ import java.net.URL;
 
 import ru.lucky.romans.campo.login.LoginActivity;
 
-import static android.R.attr.data;
-import static android.os.Build.VERSION_CODES.M;
+import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 
 public class MainActivity extends AppCompatActivity{
 
     TextView userId;
     LinearLayout linearLayout;
+    ScrollView dialogsScroller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,28 +56,25 @@ public class MainActivity extends AppCompatActivity{
             CampoStats.ACCESS_TOKEN = accessToken;
             new GetDialogs().execute();
         }
-//        Intent loginIntent = new Intent(this, LoginActivity.class);
-//        startActivityForResult(loginIntent, 1);
 
+        dialogsScroller = (ScrollView) findViewById(R.id.scroll_dialogs);
         linearLayout = (LinearLayout) findViewById(R.id.dialogs);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        CampoStats.ID_USER = data.getStringExtra("user_id");
-        CampoStats.ACCESS_TOKEN = data.getStringExtra("access_token");
+        linearLayout.removeAllViews();
+        if (requestCode != 123) {
+            CampoStats.ID_USER = data.getStringExtra("user_id");
+            CampoStats.ACCESS_TOKEN = data.getStringExtra("access_token");
+        }
         new GetDialogs().execute();
 
     }
 
 
     private class GetDialogs extends AsyncTask<String, String, JSONObject>{
-
-        @Override
-        protected void onPreExecute() {
-        }
-
         @Override
         protected JSONObject doInBackground(String... params) {
             JSONObject jsonObject = null;
@@ -126,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    startActivity(intent);
+                                    startActivityForResult(intent, 123);
 
                                 }
                                 return true;
@@ -137,7 +129,7 @@ public class MainActivity extends AppCompatActivity{
                         LinearLayout.LayoutParams dialogImageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         dialogImageParams.setMargins(5, 0, 15, 0);
                         ImageView dialogImage = new ImageView(getApplicationContext());
-                        new GetImage(CampoStats.IMAGE + currentDialog.getString("photo_50"), dialogImage).execute();
+                        new GetImage(CampoStats.IMAGE + currentDialog.getString("photo_50"), dialogImage, currentDialog.getString("conversation_id"));
 
                         //контейнер для боди и названия
                         LinearLayout bodyAndNameContainer = new LinearLayout(getApplicationContext());
@@ -153,6 +145,12 @@ public class MainActivity extends AppCompatActivity{
                         dialogNameTextView.setTextSize(18);
                         dialogNameTextView.setText(currentDialog.getString("name"));
 
+                        //линия между диалогами
+                        View lineView = new View(getApplicationContext());
+                        LinearLayout.LayoutParams lineViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        lineViewParams.height = 2;
+                        lineViewParams.setMargins(0, 0, 0, 15);
+                        lineView.setBackgroundColor(Color.LTGRAY);
 
                         //доавбление в контейнер текущего диалога
                         currentDialogContainer.addView(dialogImage, dialogImageParams);
@@ -165,6 +163,7 @@ public class MainActivity extends AppCompatActivity{
                         LinearLayout.LayoutParams currentDialogParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         currentDialogParams.setMargins(0,15, 0, 0);
                         linearLayout.addView(currentDialogContainer, currentDialogParams);
+                        linearLayout.addView(lineView, lineViewParams);
                     }
 
                 } catch (JSONException e) {
@@ -177,10 +176,20 @@ public class MainActivity extends AppCompatActivity{
 
         private String src;
         private ImageView dialogImage;
+        private String chatId;
 
-        public GetImage(String src, ImageView dialogImage){
+        public GetImage(String src, ImageView dialogImage, String chatId) {
             this.src = src;
             this.dialogImage = dialogImage;
+            this.chatId = chatId;
+
+            if (!dialogsImages.containsKey(chatId)) {
+                this.execute();
+            } else {
+                Bitmap bitmap = dialogsImages.get(chatId);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+                dialogImage.setImageBitmap(bitmap);
+            }
         }
 
         @Override
@@ -201,7 +210,7 @@ public class MainActivity extends AppCompatActivity{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            connection.setDoInput(true);;
+            connection.setDoInput(true);
             try {
                 connection.connect();
             } catch (IOException e) {
@@ -220,6 +229,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+            dialogsImages.put(chatId, bitmap);
             dialogImage.setImageBitmap(bitmap);
         }
     }
