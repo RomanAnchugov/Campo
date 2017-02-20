@@ -148,8 +148,9 @@ public class Request {
             }
             return req;
         }
-        public static String createChat(int id_user, String user_ids, String title){
-            String req = "method=messages.createChat&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&id_user=" + id_user + "&user_ids=" + user_ids + "&title=" + title;
+
+        public static String createChat(String user_ids, String title) {
+            String req = "method=messages.createChat&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&user_ids=" + user_ids + "&title=" + title;
             return  req;
         }
         public static String editChat(int chat_id, String title){
@@ -225,6 +226,17 @@ public class Request {
         }
         public static String delete(int sid, int tid){
             String req = "method=contacts.delete&access_token=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
+            return req;
+        }
+
+        public static String get(String offset, String count) {
+            String req = "method=contacts.get&access_token=" + ACCESS_TOKEN;
+            if (offset != null) {
+                req += req + "&offset=" + offset;
+            }
+            if (count != null) {
+                req += req + "&count=" + count;
+            }
             return req;
         }
     }

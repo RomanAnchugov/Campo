@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,81 +106,88 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             JSONArray messagesArray = null;
+            Log.e("JSON", jsonObject.toString());
             try {
-                messagesArray = jsonObject.getJSONArray("items");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                int i;
-                if (messagesCount > jsonObject.getInt("count")) {
-                    i = jsonObject.getInt("count");
-                } else {
-                    i = messagesCount;
-                }
-                for (; i >= 0; i--) {
-
-                    //контейнер для сообщения с картинкой
-                    RelativeLayout currentMessageContainer = new RelativeLayout(getApplicationContext());
-
-                    //картинка пользователя
-                    ImageView messageImage = new ImageView(getApplicationContext());
-
+                if (jsonObject.getInt("count") != 0) {
                     try {
-                        new GetImage(CampoStats.IMAGE + messagesArray.getJSONObject(i).getString("u_photo_50"), messageImage, messagesArray.getJSONObject(i).getString("uid"));
+                        messagesArray = jsonObject.getJSONArray("items");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    //параментры для каждого сообщения
-                    LinearLayout.LayoutParams paramsFlex = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    //Параментры для сообщения
-                    RelativeLayout.LayoutParams userMessageParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    //параментры для картинки сообщения
-                    RelativeLayout.LayoutParams userImageParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                    //текст сообщения
-                    TextView currentMessage = new TextView(getApplicationContext());
-                    if (i != 0) {
-                        messageImage.setId(i);
-                    } else {
-                        messageImage.setId(jsonObject.getInt("count") + 1);
-                    }
-
                     try {
-                        if(messagesArray.getJSONObject(i).getString("uid").equals(CampoStats.ID_USER)){
-                            currentMessageContainer.setBackgroundColor(Color.argb(255, 166, 218, 79));
-                            currentMessage.setGravity(Gravity.END);
-                            userImageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                            userImageParams.setMargins(15, 0, 0, 0);
-
-                            userMessageParams.addRule(RelativeLayout.LEFT_OF, messageImage.getId());
-                            userMessageParams.addRule(RelativeLayout.ALIGN_BASELINE, messageImage.getId());
-                        }else{
-                            currentMessageContainer.setBackgroundColor(Color.argb(255, 153, 203, 140));
-                            currentMessage.setGravity(Gravity.START);
-                            userImageParams.setMargins(0, 0, 15, 0);
-
-                            userMessageParams.addRule(RelativeLayout.RIGHT_OF, messageImage.getId());
-                            userMessageParams.addRule(RelativeLayout.ALIGN_BASELINE, messageImage.getId());
+                        int i;
+                        if (messagesCount > jsonObject.getInt("count")) {
+                            i = jsonObject.getInt("count");
+                        } else {
+                            i = messagesCount;
                         }
-                        currentMessage.setTextColor(Color.BLACK);
+                        for (; i >= 0; i--) {
+
+                            //контейнер для сообщения с картинкой
+                            RelativeLayout currentMessageContainer = new RelativeLayout(getApplicationContext());
+
+                            //картинка пользователя
+                            ImageView messageImage = new ImageView(getApplicationContext());
+
+                            try {
+                                new GetImage(CampoStats.IMAGE + messagesArray.getJSONObject(i).getString("u_photo_50"), messageImage, messagesArray.getJSONObject(i).getString("uid"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            //параментры для каждого сообщения
+                            LinearLayout.LayoutParams paramsFlex = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            //Параментры для сообщения
+                            RelativeLayout.LayoutParams userMessageParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            //параментры для картинки сообщения
+                            RelativeLayout.LayoutParams userImageParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                            //текст сообщения
+                            TextView currentMessage = new TextView(getApplicationContext());
+                            if (i != 0) {
+                                messageImage.setId(i);
+                            } else {
+                                messageImage.setId(jsonObject.getInt("count") + 1);
+                            }
+
+                            try {
+                                if (messagesArray.getJSONObject(i).getString("uid").equals(CampoStats.ID_USER)) {
+                                    currentMessageContainer.setBackgroundColor(Color.argb(255, 166, 218, 79));
+                                    currentMessage.setGravity(Gravity.END);
+                                    userImageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                                    userImageParams.setMargins(15, 0, 0, 0);
+
+                                    userMessageParams.addRule(RelativeLayout.LEFT_OF, messageImage.getId());
+                                    userMessageParams.addRule(RelativeLayout.ALIGN_BASELINE, messageImage.getId());
+                                } else {
+                                    currentMessageContainer.setBackgroundColor(Color.argb(255, 153, 203, 140));
+                                    currentMessage.setGravity(Gravity.START);
+                                    userImageParams.setMargins(0, 0, 15, 0);
+
+                                    userMessageParams.addRule(RelativeLayout.RIGHT_OF, messageImage.getId());
+                                    userMessageParams.addRule(RelativeLayout.ALIGN_BASELINE, messageImage.getId());
+                                }
+                                currentMessage.setTextColor(Color.BLACK);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                currentMessage.setText(Request.Messages.decrypt(messagesArray.getJSONObject(i).getString("body")));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            currentMessageContainer.addView(currentMessage, userMessageParams);
+                            currentMessageContainer.addView(messageImage, userImageParams);
+                            paramsFlex.setMargins(0, 0, 0, 1);
+                            linearLayoutContentMessages.addView(currentMessageContainer, paramsFlex);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    try {
-                        currentMessage.setText(Request.Messages.decrypt(messagesArray.getJSONObject(i).getString("body")));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    currentMessageContainer.addView(currentMessage, userMessageParams);
-                    currentMessageContainer.addView(messageImage, userImageParams);
-                    paramsFlex.setMargins(0, 0, 0, 1);
-                    linearLayoutContentMessages.addView(currentMessageContainer, paramsFlex);
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } catch (JSONException e1) {
+                e1.printStackTrace();
             }
         }
 
@@ -190,6 +198,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         private String src;
         private ImageView dialogImage;
         private String userId;
+        private Bitmap bitmap;
 
         public GetImage(String src, ImageView dialogImage, String userId) {
             this.src = src;

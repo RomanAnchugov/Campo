@@ -9,4 +9,8 @@
 
     <string name="enter_message">Enter your message…</string>
 
+    <string name="create_dialog_title">Create new dialog</string>
+    <string name="create_dialog_edit_hint">Dialog title</string>
+    <string name="create_dialog_friends_list">Friends</string>
+
 </resources>

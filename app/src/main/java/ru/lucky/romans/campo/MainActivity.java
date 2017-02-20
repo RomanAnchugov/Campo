@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,9 +33,15 @@ import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 
 public class MainActivity extends AppCompatActivity{
 
-    TextView userId;
-    LinearLayout linearLayout;
-    ScrollView dialogsScroller;
+    private TextView userId;
+    private LinearLayout linearLayout;
+    private ScrollView dialogsScroller;
+    private FloatingActionButton createNewDialogButton;//FloatinButton
+
+    //request codes for activities
+    private int loginRequest = 1;
+    private int currentDialogRequest = 2;
+    private int createDialogRequest = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,29 +57,32 @@ public class MainActivity extends AppCompatActivity{
         //проверка на логининг
         if(accessToken == null || password == null || login == null || idUser == null) {
             Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivityForResult(loginIntent, 1);
+            startActivityForResult(loginIntent, loginRequest);
         }else{
             CampoStats.ID_USER = idUser;
             CampoStats.ACCESS_TOKEN = accessToken;
             new GetDialogs().execute();
         }
 
+        createNewDialogButton = (FloatingActionButton) findViewById(R.id.button_create_new_dialog);
         dialogsScroller = (ScrollView) findViewById(R.id.scroll_dialogs);
         linearLayout = (LinearLayout) findViewById(R.id.dialogs);
     }
 
+    public void createDialogClick(View v) {
+        Intent intent = new Intent(this, CreateDialogActivity.class);
+        startActivityForResult(intent, createDialogRequest);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         linearLayout.removeAllViews();
-        if (requestCode != 123) {
+        if (requestCode == loginRequest) {
             CampoStats.ID_USER = data.getStringExtra("user_id");
             CampoStats.ACCESS_TOKEN = data.getStringExtra("access_token");
         }
         new GetDialogs().execute();
-
     }
-
 
     private class GetDialogs extends AsyncTask<String, String, JSONObject>{
         @Override
@@ -118,7 +128,7 @@ public class MainActivity extends AppCompatActivity{
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    startActivityForResult(intent, 123);
+                                    startActivityForResult(intent, currentDialogRequest);
 
                                 }
                                 return true;
