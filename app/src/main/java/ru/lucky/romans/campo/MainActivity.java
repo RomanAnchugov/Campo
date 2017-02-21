@@ -31,6 +31,7 @@ import ru.lucky.romans.campo.login.LoginActivity;
 
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 
+//СПИСОК ДИАЛОГОВ
 public class MainActivity extends AppCompatActivity{
 
     private TextView userId;
@@ -119,9 +120,11 @@ public class MainActivity extends AppCompatActivity{
                             public boolean onTouch(View v, MotionEvent event) {
                                 if(event.getAction() == MotionEvent.ACTION_DOWN){
                                     currentDialogContainer.setBackgroundColor(Color.LTGRAY);
-                                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                                }
+                                if (event.getAction() == MotionEvent.ACTION_HOVER_EXIT || event.getAction() == MotionEvent.ACTION_CANCEL) {
                                     currentDialogContainer.setBackgroundColor(Color.TRANSPARENT);
-                                    //тут реализовать переход на вью с выбранным диалогом
+                                }
+                                if (event.getAction() == MotionEvent.ACTION_UP) {
                                     Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
                                     try {
                                         intent.putExtra("conversation_id", currentDialog.getString("conversation_id"));
