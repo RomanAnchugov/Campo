@@ -8,7 +8,10 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +37,13 @@ import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 //СПИСОК ДИАЛОГОВ
 public class MainActivity extends AppCompatActivity{
 
+    //navigation drawer
+    DrawerLayout drawerLayout;
+    ActionBarDrawerToggle toggleButton;
     private TextView userId;
     private LinearLayout linearLayout;
     private ScrollView dialogsScroller;
     private FloatingActionButton createNewDialogButton;//FloatinButton
-
     //request codes for activities
     private int loginRequest = 1;
     private int currentDialogRequest = 2;
@@ -48,6 +53,15 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //navigation drawer
+        drawerLayout = (DrawerLayout) findViewById(R.id.activity_main);
+        toggleButton = new ActionBarDrawerToggle(this, drawerLayout, R.string.toggle_button_open, R.string.toggle_button_close);
+
+        drawerLayout.addDrawerListener(toggleButton);
+        toggleButton.syncState();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
         String login = pref.getString("login", null);
@@ -83,6 +97,11 @@ public class MainActivity extends AppCompatActivity{
             CampoStats.ACCESS_TOKEN = data.getStringExtra("access_token");
         }
         new GetDialogs().execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return toggleButton.onOptionsItemSelected(item);
     }
 
     private class GetDialogs extends AsyncTask<String, String, JSONObject>{

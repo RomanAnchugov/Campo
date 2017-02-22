@@ -13,4 +13,7 @@
     <string name="create_dialog_edit_hint">Dialog title</string>
     <string name="create_dialog_friends_list">Friends</string>
 
+    <string name="toggle_button_open">open</string>
+    <string name="toggle_button_close">close</string>
+
 </resources>
