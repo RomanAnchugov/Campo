@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity{
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //сохранение пароля
         SharedPreferences pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
         String login = pref.getString("login", null);
         String password = pref.getString("password", null);
