@@ -7,10 +7,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,11 +38,14 @@ import ru.lucky.romans.campo.login.LoginActivity;
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 
 //СПИСОК ДИАЛОГОВ
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     //navigation drawer
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle toggleButton;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggleButton;
+    private NavigationView navigationView;
+
+
     private TextView userId;
     private LinearLayout linearLayout;
     private ScrollView dialogsScroller;
@@ -49,6 +55,7 @@ public class MainActivity extends AppCompatActivity{
     private int currentDialogRequest = 2;
     private int createDialogRequest = 3;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +64,9 @@ public class MainActivity extends AppCompatActivity{
         //navigation drawer
         drawerLayout = (DrawerLayout) findViewById(R.id.activity_main);
         toggleButton = new ActionBarDrawerToggle(this, drawerLayout, R.string.toggle_button_open, R.string.toggle_button_close);
+
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         drawerLayout.addDrawerListener(toggleButton);
         toggleButton.syncState();
@@ -105,6 +115,12 @@ public class MainActivity extends AppCompatActivity{
         return toggleButton.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Log.e("JSON", "nav bar item selected");
+        return true;
+    }
+
     private class GetDialogs extends AsyncTask<String, String, JSONObject>{
         @Override
         protected JSONObject doInBackground(String... params) {
@@ -130,8 +146,9 @@ public class MainActivity extends AppCompatActivity{
 
                         //контейнер для текущего диалога
                         final LinearLayout currentDialogContainer = new LinearLayout(getApplicationContext());
+
                         currentDialogContainer.setOrientation(LinearLayout.HORIZONTAL);
-                        currentDialogContainer.setId(i);
+                        currentDialogContainer.setId(currentDialog.getInt("conversation_id"));
                         currentDialogContainer.setClickable(true);
 
 
