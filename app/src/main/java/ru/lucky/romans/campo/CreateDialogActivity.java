@@ -98,7 +98,8 @@ public class CreateDialogActivity extends AppCompatActivity {
                             return true;
                         }
                     });
-                    friendName.setText(friendsJson.getJSONObject(i).getString("last_name") + friendsJson.getJSONObject(i).getString("first_name") + "");
+                    friendName.setText(friendsJson.getJSONObject(i).getString("last_name") + " " + friendsJson.getJSONObject(i).getString("first_name") + "");
+                    friendName.setTextSize(22f);
                     friendsList.addView(friendName, layoutParams);
                 }
 

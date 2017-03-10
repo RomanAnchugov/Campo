@@ -36,6 +36,7 @@ import java.net.URL;
 import ru.lucky.romans.campo.login.LoginActivity;
 
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
+import static ru.lucky.romans.campo.CampoStats.usersImages;
 
 //СПИСОК ДИАЛОГОВ
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +55,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int loginRequest = 1;
     private int currentDialogRequest = 2;
     private int createDialogRequest = 3;
+    //header nav
+    private ImageView navUserImage;
+    private TextView navUserName;
+    private TextView navUserId;
 
 
     @Override
@@ -93,8 +98,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         createNewDialogButton = (FloatingActionButton) findViewById(R.id.button_create_new_dialog);
         dialogsScroller = (ScrollView) findViewById(R.id.scroll_dialogs);
         linearLayout = (LinearLayout) findViewById(R.id.dialogs);
+
+        //nav header
+        View header = navigationView.getHeaderView(0);
+        navUserName = (TextView) header.findViewById(R.id.nav_user_name);
+        navUserId = (TextView) header.findViewById(R.id.nav_user_id);
+        navUserImage = (ImageView) header.findViewById(R.id.nav_user_image);
+        new GetProfileInfo().execute();
     }
 
+    //метод для создания активити с Create dialogom
     public void createDialogClick(View v) {
         Intent intent = new Intent(this, CreateDialogActivity.class);
         startActivityForResult(intent, createDialogRequest);
@@ -117,7 +130,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Log.e("JSON", "nav bar item selected");
+        switch (item.getItemId()) {
+            case R.id.nav_contacts:
+                //TODO intent for contacts layout
+                Intent intent = new Intent(this, ContactsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_settings:
+                //TODO intent for settings layout
+                break;
+            case R.id.nav_exit:
+                //TODO intent for exit layout
+                break;
+            default:
+                Log.e("JSON", this.getClass().toString() + "method=onNavigationItemSelected");
+                break;
+        }
         return true;
     }
 
@@ -284,6 +312,93 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private class GetProfileInfo extends AsyncTask<String, String, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JsonParser().getJsonFromUrl(Request.Account.getProfileInfo()).getJSONObject("responce");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            try {
+                //Log.e("JSON", jsonObject.getString("id"));
+                new GetProfileImage(CampoStats.IMAGE + jsonObject.getString("photo_50"), navUserImage, jsonObject.getString("id"));
+                navUserName.setText(jsonObject.getString("first_name") + " " + jsonObject.getString("last_name"));
+                navUserId.setText("Your id: " + jsonObject.getString("id"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class GetProfileImage extends AsyncTask<String, String, Bitmap> {
+
+        private String src;
+        private ImageView dialogImage;
+        private String userId;
+
+        public GetProfileImage(String src, ImageView dialogImage, String userId) {
+            this.src = src;
+            this.dialogImage = dialogImage;
+            this.userId = userId;
+
+            if (!usersImages.containsKey(userId)) {
+                this.execute();
+            } else {
+                Bitmap bitmap = usersImages.get(userId);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+                dialogImage.setImageBitmap(bitmap);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            URL url = null;
+            try {
+                url = new URL(src);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) url.openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoInput(true);
+            try {
+                connection.connect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            InputStream input = null;
+            try {
+                input = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+            usersImages.put(userId, bitmap);
+            dialogImage.setImageBitmap(bitmap);
+        }
+    }
 }
 
 

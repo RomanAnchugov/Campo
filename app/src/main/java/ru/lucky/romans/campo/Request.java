@@ -220,7 +220,7 @@ public class Request {
     }
 
     public static class Friends{
-        public static String add(int sid, int tid){
+        public static String add(String sid, String tid) {
             String req = "method=contacts.add&access_token=" + ACCESS_TOKEN + "&sid=" + sid + "&tid=" + tid;
             return req;
         }
