@@ -169,13 +169,12 @@ public class ContactsActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+            return BitmapFactory.decodeStream(input);
         }
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+            bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
             contactImage.setImageBitmap(bitmap);
         }
     }

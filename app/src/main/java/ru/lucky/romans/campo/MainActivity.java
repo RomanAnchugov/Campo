@@ -13,7 +13,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +37,6 @@ import ru.lucky.romans.campo.login.LoginActivity;
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 import static ru.lucky.romans.campo.CampoStats.usersImages;
 
-//СПИСОК ДИАЛОГОВ
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     //navigation drawer
@@ -104,7 +102,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navUserName = (TextView) header.findViewById(R.id.nav_user_name);
         navUserId = (TextView) header.findViewById(R.id.nav_user_id);
         navUserImage = (ImageView) header.findViewById(R.id.nav_user_image);
+
         new GetProfileInfo().execute();
+
+        new GetFriendsList().execute();
     }
 
     //метод для создания активити с Create dialogom
@@ -143,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //TODO intent for exit layout
                 break;
             default:
-                Log.e("JSON", this.getClass().toString() + "method=onNavigationItemSelected");
                 break;
         }
         return true;
     }
 
+    //загрузка информации о диалогах
     private class GetDialogs extends AsyncTask<String, String, JSONObject>{
         @Override
         protected JSONObject doInBackground(String... params) {
@@ -207,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         LinearLayout.LayoutParams dialogImageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         dialogImageParams.setMargins(5, 0, 15, 0);
                         ImageView dialogImage = new ImageView(getApplicationContext());
-                        new GetImage(CampoStats.IMAGE + currentDialog.getString("photo_50"), dialogImage, currentDialog.getString("conversation_id"));
+                        new GetDialogsImages(CampoStats.IMAGE + currentDialog.getString("photo_50"), dialogImage, currentDialog.getString("conversation_id"));
 
                         //контейнер для боди и названия
                         LinearLayout bodyAndNameContainer = new LinearLayout(getApplicationContext());
@@ -250,13 +251,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
-    private class GetImage extends AsyncTask<String, String, Bitmap>{
+
+    private class GetDialogsImages extends AsyncTask<String, String, Bitmap> {
 
         private String src;
         private ImageView dialogImage;
         private String chatId;
 
-        public GetImage(String src, ImageView dialogImage, String chatId) {
+        public GetDialogsImages(String src, ImageView dialogImage, String chatId) {
             this.src = src;
             this.dialogImage = dialogImage;
             this.chatId = chatId;
@@ -312,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //загрузка информации о пользователе
     private class GetProfileInfo extends AsyncTask<String, String, JSONObject> {
 
         @Override
@@ -328,7 +331,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             try {
-                //Log.e("JSON", jsonObject.getString("id"));
                 new GetProfileImage(CampoStats.IMAGE + jsonObject.getString("photo_50"), navUserImage, jsonObject.getString("id"));
                 navUserName.setText(jsonObject.getString("first_name") + " " + jsonObject.getString("last_name"));
                 navUserId.setText("Your id: " + jsonObject.getString("id"));
@@ -337,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
-
     private class GetProfileImage extends AsyncTask<String, String, Bitmap> {
 
         private String src;
@@ -397,6 +398,85 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
             usersImages.put(userId, bitmap);
             dialogImage.setImageBitmap(bitmap);
+        }
+    }
+
+    //предзагрузка всех картинок друзей
+    private class GetFriendsList extends AsyncTask<String, String, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JsonParser().getJsonFromUrl(Request.Friends.get(null, null)).getJSONObject("responce");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            try {
+                JSONArray friendsArray = jsonObject.getJSONArray("items");
+                for (int i = 0; i < friendsArray.length(); i++) {
+                    JSONObject currentFriend = friendsArray.getJSONObject(i);
+                    new GetFriendsImages(currentFriend.getString("id"), currentFriend.getString("photo_50"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class GetFriendsImages extends AsyncTask<String, String, Bitmap> {
+
+
+        private String src = CampoStats.IMAGE;
+        private String userId;
+
+        public GetFriendsImages(String userId, String src) {
+            this.src += src;
+            this.userId = userId;
+
+            if (!usersImages.containsKey(userId)) {
+                this.execute();
+            }
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            URL url = null;
+            try {
+                url = new URL(src);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) url.openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoInput(true);
+            try {
+                connection.connect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            InputStream input = null;
+            try {
+                input = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return BitmapFactory.decodeStream(input);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+            usersImages.put(userId, bitmap);
         }
     }
 }
