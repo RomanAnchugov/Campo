@@ -1,24 +1,18 @@
-package ru.lucky.romans.campo.login;
+package ru.lucky.romans.campo;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import ru.lucky.romans.campo.CampoStats;
-import ru.lucky.romans.campo.JsonParser;
-import ru.lucky.romans.campo.MainActivity;
-import ru.lucky.romans.campo.R;
-import ru.lucky.romans.campo.Request;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -40,28 +34,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         context = this;
 
-        pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);;
+        pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
 
         loginField = (EditText) findViewById(R.id.editTextLogin);
         passwordField = (EditText) findViewById(R.id.editTextPassword);
         loginButton = (Button) findViewById(R.id.button_login);
         loginButton.setOnClickListener(this);
 
+        //SharedPreferences pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
+        String login = pref.getString("login", null);
+        String password = pref.getString("password", null);
+        String accessToken = pref.getString("token", null);
+        String idUser = pref.getString("user_id", null);
 
+        //проверка на логининг
+        if (login != null && password != null && accessToken != null && idUser != null) {
+            CampoStats.ID_USER = idUser;
+            CampoStats.ACCESS_TOKEN = accessToken;
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        } else {
+            Toast.makeText(getApplicationContext(), "Enter your account", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onClick(View v) {
-        new JsonGetter().execute();
         login = loginField.getText().toString();
         password = passwordField.getText().toString();
+        new JsonGetter().execute();
     }
 
     private class JsonGetter extends AsyncTask<String, String, JSONObject>{
 
-        @Override
-        protected void onPreExecute() {
-        }
 
         @Override
         protected JSONObject doInBackground(String... params) {
@@ -78,11 +82,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         protected void onPostExecute(JSONObject jsonObject) {
             if(jsonObject != null) {
                 try {
-                    //TODO сдулать проверку на правильность пароль\логина
-                    Intent intent = new Intent();
-                    intent.putExtra("user_id", jsonObject.getString("user_id"));
-                    intent.putExtra("access_token", jsonObject.getString("access_token"));
-                    setResult(RESULT_OK, intent);
+                    //TODO сделать проверку на правильность пароль\логина
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 
                     SharedPreferences.Editor editPref = pref.edit();
                     editPref.putString("login", login);
@@ -91,7 +92,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editPref.putString("user_id", jsonObject.getString("user_id"));
                     editPref.apply();
 
-                    finish();
+                    startActivity(intent);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -25,5 +25,13 @@
     <string name="add_new_contact_id">User id</string>
     <string name="add_new_contact_button">Add</string>
 
+    <string name="change_user_information_name">Name</string>
+    <string name="change_user_information_surname">Surname</string>
+    <string name="change_user_information_patronymic">Patronymic</string>
+    <string name="change_user_information_sex">Sex</string>
+    <string name="change_user_information_submit_btn">Submit</string>
+    <string name="change_user_information_woman">Woman</string>
+    <string name="change_user_information_man">Man</string>
+
 
 </resources>

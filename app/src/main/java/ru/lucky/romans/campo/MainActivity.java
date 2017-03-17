@@ -32,8 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import ru.lucky.romans.campo.login.LoginActivity;
-
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 import static ru.lucky.romans.campo.CampoStats.usersImages;
 
@@ -84,14 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String idUser = pref.getString("user_id", null);
 
         //проверка на логининг
-        if(accessToken == null || password == null || login == null || idUser == null) {
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivityForResult(loginIntent, loginRequest);
-        }else{
-            CampoStats.ID_USER = idUser;
-            CampoStats.ACCESS_TOKEN = accessToken;
-            new GetDialogs().execute();
-        }
+        CampoStats.ID_USER = idUser;
+        CampoStats.ACCESS_TOKEN = accessToken;
+        new GetDialogs().execute();
 
         createNewDialogButton = (FloatingActionButton) findViewById(R.id.button_create_new_dialog);
         dialogsScroller = (ScrollView) findViewById(R.id.scroll_dialogs);
@@ -131,17 +124,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.nav_contacts:
-                //TODO intent for contacts layout
-                Intent intent = new Intent(this, ContactsActivity.class);
+                //вызов активити со списком контактов
+                intent = new Intent(this, ContactsActivity.class);
                 startActivity(intent);
                 break;
             case R.id.nav_settings:
-                //TODO intent for settings layout
+                //вызов активити с настройками аккаунта
+                intent = new Intent(this, ChangeUserInformationActivity.class);
+                startActivity(intent);
                 break;
             case R.id.nav_exit:
                 //TODO intent for exit layout
+                SharedPreferences pref = getApplicationContext().getSharedPreferences(getString(R.string.data_file_name), MODE_PRIVATE);
+                SharedPreferences.Editor editPref = pref.edit();
+                editPref.putString("login", null);
+                editPref.putString("password", null);
+                editPref.putString("token", null);
+                editPref.putString("user_id", null);
+                editPref.apply();
+                intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;

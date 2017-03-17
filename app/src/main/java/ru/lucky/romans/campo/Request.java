@@ -213,8 +213,15 @@ public class Request {
             String req = "method=account.getProfileInfo&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER;
             return req;
         }
-        public static String saveProfileInfo(String last_name, String first_name, int sex, String screen_name, String maiden_name){
-            String req = "method=account.saveProfileInfo&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&last_name=" + last_name + "&first_name=" + first_name + "&sex=" + sex + "&screen_name=" + screen_name + "&maiden_name=" + maiden_name;
+
+        public static String saveProfileInfo(String last_name, String first_name, String sex, String maiden_name, String screen_name) {
+            String req = "method=account.saveProfileInfo&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&last_name=" + last_name + "&first_name=" + first_name + "&sex=" + sex;
+            if (screen_name != null) {
+                req += "&screen_name=" + screen_name;
+            }
+            if (maiden_name != null) {
+                req += "&maiden_name=" + maiden_name;
+            }
             return req;
         }
     }
