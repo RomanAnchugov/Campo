@@ -39,6 +39,8 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
     private EditText editMessage;
     private ScrollView messagesScroller;
 
+    private boolean senderFlag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
         sendButton.setOnClickListener(this);
         conversationId = intent.getStringExtra("conversation_id");
         linearLayoutContentMessages = (LinearLayout) findViewById(R.id.linear_layout_messages_content);
+        senderFlag = false;
 
         new GetMessages(20).execute();
         new GetChat().execute();//test
@@ -59,7 +62,9 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        new SentMessage(editMessage.getText().toString()).execute();
+        if (!senderFlag) {
+            new SentMessage(editMessage.getText().toString()).execute();
+        }
     }
 
     private class SentMessage extends AsyncTask<String, String, JSONObject> {
@@ -68,6 +73,11 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
         public SentMessage(String currentMessage) {
             this.currentMessage = currentMessage;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            senderFlag = true;
         }
 
         @Override
@@ -105,6 +115,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+            senderFlag = false;
             JSONArray messagesArray = null;
             Log.e("JSON", jsonObject.toString());
             try {
@@ -122,6 +133,7 @@ public class DialogActivity extends AppCompatActivity implements View.OnClickLis
                         } else {
                             i = messagesCount;
                         }
+                        i = jsonObject.getInt("count");
                         for (; i >= 0; i--) {
 
                             //контейнер для сообщения с картинкой

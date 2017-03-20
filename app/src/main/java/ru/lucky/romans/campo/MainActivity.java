@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             JSONObject jsonObject = null;
             try {
                 //основной запрос
-                jsonObject = new JsonParser().getJsonFromUrl(Request.Messages.getDialogs(-10, -10, -10, -10, -10)).getJSONObject("responce");
+                jsonObject = new JsonParser().getJsonFromUrl(Request.Messages.getDialogs(-10, -10, -10, 100, -10)).getJSONObject("responce");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
