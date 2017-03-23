@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.nav_test:
+                intent = new Intent(this, TestActivity.class);
+                startActivity(intent);
             default:
                 break;
         }

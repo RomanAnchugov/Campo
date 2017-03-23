@@ -14,5 +14,8 @@
         android:id="@+id/nav_exit"
         android:icon="@mipmap/ic_exit_to_app_black_24dp"
         android:title="@string/nav_title_exit" />
+    <item
+        android:id="@+id/nav_test"
+        android:title="@string/test" />
 
 </menu>

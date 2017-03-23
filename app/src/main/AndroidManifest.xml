@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait"
@@ -44,7 +44,8 @@
         <activity
             android:name=".AddNewContactActivity"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
-        <activity android:name=".ChangeUserInformationActivity"></activity>
+        <activity android:name=".ChangeUserInformationActivity" />
+        <activity android:name=".TestActivity"></activity>
     </application>
 
 </manifest>
