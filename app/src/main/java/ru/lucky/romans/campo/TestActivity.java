@@ -17,6 +17,7 @@ public class TestActivity extends AppCompatActivity {
 
     ListView listView;
     List<Message> list;
+    MessageAdapter messageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class TestActivity extends AppCompatActivity {
         // ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, initData());
 
         new GetDialogs().execute();
-        MessageAdapter messageAdapter = new MessageAdapter(this, initData());
+        messageAdapter = new MessageAdapter(this, initData());
 
         listView.setAdapter(messageAdapter);
     }
@@ -59,6 +60,7 @@ public class TestActivity extends AppCompatActivity {
                 for (int i = 0; i < chats.length(); i++) {
                     JSONObject currentChat = chats.getJSONObject(i);
                     list.add(new Message(1, currentChat.getString("name"), 1));
+                    messageAdapter.notifyDataSetChanged();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
