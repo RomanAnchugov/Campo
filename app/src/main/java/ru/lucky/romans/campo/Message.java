@@ -1,42 +1,54 @@
 package ru.lucky.romans.campo;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Roman on 23.03.2017.
  */
 
 public class Message {
 
-    private long id;
-    private String name;
-    private long price;
+    private Bitmap chatImage;
+    private String chatName;
+    private String chatPreview;
+    private String chatId;
 
-    public Message(long id, String name, long price) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
+    public Message(Bitmap chatImage, String chatName, String chatPreview, String chatId) {
+        this.chatImage = chatImage;
+        this.chatName = chatName;
+        this.chatPreview = chatPreview;
+        this.chatId = chatId;
     }
 
-    public long getId() {
-        return id;
+    public Bitmap getChatImage() {
+        return chatImage;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setChatImage(Bitmap chatImage) {
+        this.chatImage = chatImage;
     }
 
-    public String getName() {
-        return name;
+    public String getChatName() {
+        return chatName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
     }
 
-    public long getPrice() {
-        return price;
+    public String getChatPreview() {
+        return chatPreview;
     }
 
-    public void setPrice(long price) {
-        this.price = price;
+    public void setChatPreview(String chatPreview) {
+        this.chatPreview = chatPreview;
+    }
+
+    public String getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }

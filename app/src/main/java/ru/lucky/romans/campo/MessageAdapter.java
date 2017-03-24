@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class MessageAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int i) {
-        return list.get(i).getId();
+        return i;
     }
 
     @Override
@@ -44,8 +45,14 @@ public class MessageAdapter extends BaseAdapter {
         if (contentView == null) {
             contentView = layoutInflater.inflate(R.layout.message_layout, viewGroup, false);
         }
-        TextView textView = (TextView) contentView.findViewById(R.id.textView6);
-        textView.setText(getMessage(i).getName());
+        TextView chatName = (TextView) contentView.findViewById(R.id.chat_header);
+        TextView chatPreview = (TextView) contentView.findViewById(R.id.chat_preview);
+        ImageView chatImage = (ImageView) contentView.findViewById(R.id.chat_image);
+
+        chatName.setText(getMessage(i).getChatName());
+        chatPreview.setText(getMessage(i).getChatPreview());
+        chatImage.setImageBitmap(getMessage(i).getChatImage());
+
         return contentView;
     }
 

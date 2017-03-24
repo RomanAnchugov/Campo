@@ -1,5 +1,7 @@
 package ru.lucky.romans.campo;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +12,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -59,13 +68,84 @@ public class TestActivity extends AppCompatActivity {
                 JSONArray chats = jsonObject.getJSONArray("items");
                 for (int i = 0; i < chats.length(); i++) {
                     JSONObject currentChat = chats.getJSONObject(i);
-                    list.add(new Message(1, currentChat.getString("name"), 1));
-                    messageAdapter.notifyDataSetChanged();
+                    String chatImageLink = currentChat.getString("photo_50");
+                    String chatName = currentChat.getString("name");
+                    String chatPreview = Request.Messages.decrypt(currentChat.getString("body"));
+                    String chatId = currentChat.getString("conversation_id");
+
+                    new GetChatImage(chatImageLink, chatName, chatPreview, chatId);
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    private class GetChatImage extends AsyncTask<String, String, Bitmap> {
+
+        private String src;
+        private String chatName;
+        private String chatPreview;
+        private String chatId;
+
+        public GetChatImage(String src, String chatName, String chatPreview, String chatId) {
+            this.src = src;
+            this.chatName = chatName;
+            this.chatPreview = chatPreview;
+            this.chatId = chatId;
+
+            if (!dialogsImages.containsKey(chatId)) {
+                this.execute();
+            } else {
+                Bitmap bitmap = dialogsImages.get(chatId);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+                list.add(new Message(bitmap, chatName, chatPreview, chatId));
+                messageAdapter.notifyDataSetChanged();
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            URL url = null;
+            try {
+                url = new URL(src);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) url.openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoInput(true);
+            try {
+                connection.connect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            InputStream input = null;
+            try {
+                input = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+            dialogsImages.put(chatId, bitmap);
+            list.add(new Message(bitmap, chatName, chatPreview, chatId));
+            messageAdapter.notifyDataSetChanged();
         }
     }
 }
