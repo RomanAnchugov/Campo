@@ -35,6 +35,8 @@
 
     <string name="test">test</string>
 
+    <string name="delete_chat_menu_text">delete</string>
+
 
 </resources>
 

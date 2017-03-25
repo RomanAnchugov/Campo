@@ -1,11 +1,16 @@
 package ru.lucky.romans.campo;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.json.JSONArray;
@@ -34,14 +39,38 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
 
         listView = (ListView) findViewById(R.id.list_view);
+        registerForContextMenu(listView);
         list = new ArrayList<>();
-
-        // ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, initData());
 
         new GetDialogs().execute();
         messageAdapter = new MessageAdapter(this, initData());
 
         listView.setAdapter(messageAdapter);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.list_view) {
+            ListView listView = (ListView) v;
+            AdapterView.AdapterContextMenuInfo listViewInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            Message currentMessage = (Message) listView.getItemAtPosition(((AdapterView.AdapterContextMenuInfo) menuInfo).position);
+
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.delete_chat_menu, menu);
+            Intent intent = new Intent();
+            intent.putExtra("chatId", currentMessage.getChatId());
+            menu.getItem(0).setIntent(intent);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.delete_chat_menu_item) {
+            Intent intent = item.getIntent();
+            String chatId = intent.getStringExtra("chatId");
+            //TODO deleting dialog
+        }
+        return true;
     }
 
     private List<Message> initData() {
@@ -63,7 +92,6 @@ public class TestActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            Log.e("JSON", jsonObject.toString());
             try {
                 JSONArray chats = jsonObject.getJSONArray("items");
                 for (int i = 0; i < chats.length(); i++) {
