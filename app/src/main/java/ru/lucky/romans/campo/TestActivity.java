@@ -68,6 +68,7 @@ public class TestActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.delete_chat_menu_item) {
             Intent intent = item.getIntent();
             String chatId = intent.getStringExtra("chatId");
+
             //TODO deleting dialog
         }
         return true;
