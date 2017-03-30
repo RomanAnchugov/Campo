@@ -1,4 +1,4 @@
-package ru.lucky.romans.campo;
+package ru.lucky.romans.campo.chats;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,13 +25,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.lucky.romans.campo.JsonParser;
+import ru.lucky.romans.campo.R;
+import ru.lucky.romans.campo.Request;
+
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 
-public class TestActivity extends AppCompatActivity {
+public class ChatsActivity extends AppCompatActivity {
 
     ListView listView;
-    List<Message> list;
-    MessageAdapter messageAdapter;
+    List<ChatTemplate> list;
+    ChatsAdapter messageAdapter;
+    ChatTemplate chatToDelte = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,7 @@ public class TestActivity extends AppCompatActivity {
         list = new ArrayList<>();
 
         new GetDialogs().execute();
-        messageAdapter = new MessageAdapter(this, initData());
+        messageAdapter = new ChatsAdapter(this, initData());
 
         listView.setAdapter(messageAdapter);
     }
@@ -53,12 +58,13 @@ public class TestActivity extends AppCompatActivity {
         if (v.getId() == R.id.list_view) {
             ListView listView = (ListView) v;
             AdapterView.AdapterContextMenuInfo listViewInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-            Message currentMessage = (Message) listView.getItemAtPosition(((AdapterView.AdapterContextMenuInfo) menuInfo).position);
+            chatToDelte = (ChatTemplate) listView.getItemAtPosition(((AdapterView.AdapterContextMenuInfo) menuInfo).position);
 
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.delete_chat_menu, menu);
             Intent intent = new Intent();
-            intent.putExtra("chatId", currentMessage.getChatId());
+            intent.putExtra("chatId", chatToDelte.getChatId());
+
             menu.getItem(0).setIntent(intent);
         }
     }
@@ -68,13 +74,14 @@ public class TestActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.delete_chat_menu_item) {
             Intent intent = item.getIntent();
             String chatId = intent.getStringExtra("chatId");
-
-            //TODO deleting dialog
+            new DeleteChat(chatId).execute();
+            list.remove(chatToDelte);
+            messageAdapter.notifyDataSetChanged();
         }
         return true;
     }
 
-    private List<Message> initData() {
+    private List<ChatTemplate> initData() {
         return list;
     }
 
@@ -100,6 +107,9 @@ public class TestActivity extends AppCompatActivity {
                     String chatImageLink = currentChat.getString("photo_50");
                     String chatName = currentChat.getString("name");
                     String chatPreview = Request.Messages.decrypt(currentChat.getString("body"));
+                    if (currentChat.getString("body").equals("null")) {//проверка на сущетвование
+                        chatPreview = "(nothing)";
+                    }
                     String chatId = currentChat.getString("conversation_id");
 
                     new GetChatImage(chatImageLink, chatName, chatPreview, chatId);
@@ -130,7 +140,10 @@ public class TestActivity extends AppCompatActivity {
             } else {
                 Bitmap bitmap = dialogsImages.get(chatId);
                 bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
-                list.add(new Message(bitmap, chatName, chatPreview, chatId));
+                if (chatPreview.equals("Z -")) {//проверка на наличие превью
+                    chatPreview = "(nothing)";
+                }
+                list.add(new ChatTemplate(bitmap, chatName, chatPreview, chatId));
                 messageAdapter.notifyDataSetChanged();
             }
         }
@@ -173,8 +186,29 @@ public class TestActivity extends AppCompatActivity {
         protected void onPostExecute(Bitmap bitmap) {
             bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
             dialogsImages.put(chatId, bitmap);
-            list.add(new Message(bitmap, chatName, chatPreview, chatId));
+            list.add(new ChatTemplate(bitmap, chatName, chatPreview, chatId));
             messageAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class DeleteChat extends AsyncTask<String, String, JSONObject> {
+
+        private String chatId;
+
+        public DeleteChat(String chatId) {
+            this.chatId = chatId;
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            //TODO deleting dialog
+            JSONObject jsonObject = new JsonParser().getJsonFromUrl(Request.Messages.deleteDialog(chatId, null, null));
+            return jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+
         }
     }
 }

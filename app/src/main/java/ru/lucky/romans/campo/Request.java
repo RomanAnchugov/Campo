@@ -123,12 +123,13 @@ public class Request {
             }
             return req;
         }
-        public static String deleteDialog(int peer_id, int offset, int count){
+
+        public static String deleteDialog(String peer_id, String offset, String count) {
             String req = "method=messages.deleteDialog&access_token=" + ACCESS_TOKEN + "&id_user=" + ID_USER + "&peer_id=" + peer_id;
-            if(offset != -10){
+            if (offset != null) {
                 req += "&offset=" + offset;
             }
-            if(count != -10){
+            if (count != null) {
                 req += "&count=" + count;
             }
             return req;

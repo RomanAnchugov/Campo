@@ -1,4 +1,4 @@
-package ru.lucky.romans.campo;
+package ru.lucky.romans.campo.chats;
 
 import android.graphics.Bitmap;
 
@@ -6,14 +6,14 @@ import android.graphics.Bitmap;
  * Created by Roman on 23.03.2017.
  */
 
-public class Message {
+public class ChatTemplate {
 
     private Bitmap chatImage;
     private String chatName;
     private String chatPreview;
     private String chatId;
 
-    public Message(Bitmap chatImage, String chatName, String chatPreview, String chatId) {
+    public ChatTemplate(Bitmap chatImage, String chatName, String chatPreview, String chatId) {
         this.chatImage = chatImage;
         this.chatName = chatName;
         this.chatPreview = chatPreview;

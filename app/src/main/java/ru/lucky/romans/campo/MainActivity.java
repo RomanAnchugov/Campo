@@ -32,6 +32,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import ru.lucky.romans.campo.chats.ChatsActivity;
+
 import static ru.lucky.romans.campo.CampoStats.dialogsImages;
 import static ru.lucky.romans.campo.CampoStats.usersImages;
 
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 break;
             case R.id.nav_test:
-                intent = new Intent(this, TestActivity.class);
+                intent = new Intent(this, ChatsActivity.class);
                 startActivity(intent);
             default:
                 break;
